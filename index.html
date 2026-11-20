@@ -43,6 +43,7 @@ h3{font-size:17px;margin:0 0 10px}
 .btn{background:var(--stamp);color:#fff;border:0;border-radius:10px;padding:12px 26px;min-height:48px;font-weight:700;font-size:17px}
 .btn:hover{filter:brightness(1.08)}
 .btn.alt{background:var(--sea);}
+.lnk{display:inline-flex;align-items:center;min-height:48px;margin-inline-start:12px;padding:10px 20px;border:2px solid rgba(255,255,255,.5);border-radius:10px;color:#fff;font-weight:700;text-decoration:none}.lnk:hover{border-color:#fff}.lnk.dk{color:var(--ink);border-color:var(--line)}
 .best{font-size:14px;color:#b9d3d1;margin-top:12px}
 .kicker{color:var(--mute);font-size:14px;margin:0}
 .kicker b{color:var(--ink)}
@@ -178,7 +179,7 @@ app.innerHTML=`<section class="band hero"><div class="wrap"><div>
 <p class="lead">당신은 한빛코스메틱 해외영업팀 신입입니다. 미국 LA의 바이어에게 수분 크림 2,000개를 수출합니다. 계약 조건을 정하고, 은행에 낼 선적서류를 검토해 대금을 받아 내세요. 판단이 맞으면 이익이 쌓이고, 틀리면 손실이 납니다.</p>
 <ol class="steps"><li><b>1단계 · 계약 조건 (6문제)</b>인코텀즈, 위험 이전, 적하보험, 결제 방식, 신용장 원칙</li>
 <li><b>2단계 · 서류 심사 (3건)</b>신용장과 상업송장, 선하증권, 보험증권을 대조해 하자 찾기 (UCP 600)</li></ol>
-<button class="btn" data-a="start">업무 시작</button>
+<button class="btn" data-a="start">업무 시작</button><a class="lnk" href="training.html">용어 먼저 연습하기</a>
 ${best!==null?`<p class="best">내 최고 기록 ${fmt(best)}</p>`:''}
 </div>${ship}</div></section>`}
 function renderQ(){const q=Q[S.qi];S.picked=null;hud(`1단계 · ${S.qi+1}/${Q.length}`);
@@ -231,7 +232,7 @@ app.innerHTML=`<section class="band"><div class="card">
 <p class="kicker">업무 종료 · 등급 <b>${g[0]}</b></p><div class="score">${fmt(S.money)}</div><p style="margin:0">${g[1]} 최대 가능 이익은 ${fmt(max)}입니다.${nb?' 최고 기록을 새로 세웠습니다.':''}</p>
 <div class="grid2"><div class="stat"><b>${S.qOk}/${Q.length}</b><span>계약 조건 정답</span></div><div class="stat"><b>${S.hit}/${S.tot}</b><span>서류 하자 발견</span></div><div class="stat"><b>${S.fls}</b><span>잘못 표시한 항목</span></div></div>
 <h3>오답 노트</h3>${S.notes.length?`<ul class="items">${S.notes.map(([t,e])=>`<li><b>${t}</b><p style="margin:4px 0 0">${e}</p></li>`).join('')}</ul>`:'<p>틀린 것이 없습니다. 완벽합니다.</p>'}
-<button class="btn" data-a="start">처음부터 다시</button></div></section>`;window.scrollTo(0,0)}
+<button class="btn" data-a="start">처음부터 다시</button><a class="lnk dk" href="training.html">틀린 용어 연습하러 가기</a></div></section>`;window.scrollTo(0,0)}
 app.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
 if(a==='start'){reset();renderQ()}
 else if(a==='pick')pick(+b.dataset.i);
