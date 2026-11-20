@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>부산항 수출 데스크</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 차분한 실무 교재 + 약간의 게임 긴장감. 실수하면 돈이 나간다.
+   IDEA: 수출 담당자의 책상 — 신용장과 선적서류가 펼쳐져 있고 은행 도장이 찍힌다.
+   PICTURE: 첫 화면은 부산항 컨테이너선, 게임 중에는 서류 자체가 그림.
+   COLOUR and TYPE: 깊은 항구 청록 바탕 띠, 종이 흰색 서류, 은행 도장 빨강 하나. IBM Plex Sans KR + 서류 값은 Plex Mono.
+   LAYOUT: 상단 HUD 띠, 중앙 한 단 카드; 서류 심사는 왼쪽 L/C 고정 + 오른쪽 서류 그리드, 900px 아래 쌓기. */
+:root{color-scheme:light dark;
+--bg:light-dark(#eef2f1,#0c1719);--ink:light-dark(#13211f,#e6eeec);--mute:light-dark(#566664,#9fb2af);
+--sea:light-dark(#0f5560,#0b3f47);--sea2:light-dark(#0b434c,#082f35);--paper:light-dark(#fffdf8,#162629);
+--line:light-dark(#d3dcda,#2a3e42);--stamp:#cf3229;--stampbg:light-dark(#fdecea,#3a1b19);--ok:light-dark(#0f6f7a,#58c2cc);--okbg:light-dark(#e3f3f4,#11343a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans KR",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--ok);outline-offset:2px}
+.top{background:var(--sea2);color:#eaf4f3;position:sticky;top:0;z-index:5}
+.top .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;justify-content:space-between;padding:12px max(5vw,16px)}
+.brand{font-weight:700;font-size:17px}
+.hud{display:flex;gap:20px;align-items:baseline;font-size:14px;color:#b9d3d1}
+.hud b{font:600 20px "IBM Plex Mono",monospace;color:#fff;white-space:nowrap}
+.hud b.neg{color:#ff9d95}
+.pulse{animation:p .5s}@keyframes p{50%{transform:scale(1.15)}}
+.hero{background:var(--sea);color:#eef6f5}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:32px;align-items:center}
+h1{font-size:clamp(32px,5vw,52px);line-height:1.05;margin:0 0 16px;text-wrap:balance}
+h2{font-size:clamp(22px,3vw,30px);line-height:1.2;margin:8px 0 20px;text-wrap:balance}
+h3{font-size:17px;margin:0 0 10px}
+.lead{font-size:17px;max-width:34em;color:#cfe3e1}
+.steps{margin:20px 0 28px;padding:0;list-style:none;display:grid;gap:10px}
+.steps li{background:rgba(255,255,255,.08);border-radius:10px;padding:12px 16px}
+.steps b{display:block}
+.ship{width:100%;height:auto;display:block}
+.btn{background:var(--stamp);color:#fff;border:0;border-radius:10px;padding:12px 26px;min-height:48px;font-weight:700;font-size:17px}
+.btn:hover{filter:brightness(1.08)}
+.btn.alt{background:var(--sea);}
+.lnk{display:inline-flex;align-items:center;min-height:48px;margin-inline-start:12px;padding:10px 20px;border:2px solid rgba(255,255,255,.5);border-radius:10px;color:#fff;font-weight:700;text-decoration:none}.lnk:hover{border-color:#fff}.lnk.dk{color:var(--ink);border-color:var(--line)}
+.best{font-size:14px;color:#b9d3d1;margin-top:12px}
+.kicker{color:var(--mute);font-size:14px;margin:0}
+.kicker b{color:var(--ink)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:clamp(18px,3vw,32px);max-width:820px;margin:0 auto;box-shadow:0 6px 24px rgba(0,0,0,.06)}
+.sit{display:flex;gap:14px;margin:18px 0 4px;align-items:flex-start}
+.who{flex:none;background:var(--sea);color:#fff;border-radius:8px;padding:4px 10px;font-size:14px;font-weight:600}
+.sit p{margin:0;font-size:17px}
+.opts{display:grid;gap:10px}
+.opt{text-align:start;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:14px 16px;min-height:52px}
+.opt:hover:not(:disabled){border-color:var(--ok)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--stamp);background:var(--stampbg)}
+.fb{margin-top:20px;border-radius:12px;padding:18px 20px;border-left:6px solid}
+.fb.good{background:var(--okbg);border-color:var(--ok)}
+.fb.bad{background:var(--stampbg);border-color:var(--stamp)}
+.fb p{margin:6px 0}
+.fb .delta{font:600 18px "IBM Plex Mono",monospace}
+.next{margin-top:16px}
+.desk{display:grid;grid-template-columns:340px minmax(0,1fr);gap:24px;align-items:start}
+.lc{background:var(--sea);color:#eef6f5;border-radius:14px;padding:20px;position:sticky;top:72px}
+.lc dl{margin:0;display:grid;gap:8px}
+.lc dt{font-size:13px;color:#a9cbc8}
+.lc dd{margin:0 0 4px;font:14px/1.45 "IBM Plex Mono",monospace;overflow-wrap:anywhere}
+.docs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.doc{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px;box-shadow:0 2px 0 var(--line),0 8px 18px rgba(0,0,0,.05)}
+.doc h3{border-bottom:2px solid var(--ink);padding-bottom:6px;font-size:15px}
+.f{display:block;width:100%;text-align:start;background:none;border:2px solid transparent;border-radius:6px;padding:6px 8px;margin:2px 0;min-height:44px;position:relative}
+.f:hover:not(:disabled){background:var(--bg)}
+.f .l{display:block;font-size:13px;color:var(--mute)}
+.f .v{display:block;font:14px/1.4 "IBM Plex Mono",monospace;overflow-wrap:anywhere}
+.f.on{border-color:var(--stamp);background:var(--stampbg)}
+.f.on::after,.f.hit::after,.f.miss::after,.f.fls::after{position:absolute;top:6px;right:8px;font-size:12px;font-weight:700;border-radius:4px;padding:0 6px}
+.f.on::after{content:"하자?";color:var(--stamp)}
+.f:disabled{cursor:default}
+.f.hit{border-color:var(--stamp);background:var(--stampbg)}.f.hit::after{content:"발견";background:var(--stamp);color:#fff}
+.f.miss{border:2px dashed var(--stamp)}.f.miss::after{content:"놓침";color:var(--stamp)}
+.f.fls{border-color:var(--line);opacity:.75}.f.fls::after{content:"하자 아님";color:var(--mute)}
+.bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin:0 0 20px}
+.bar p{margin:4px 0 0;color:var(--mute);max-width:42em}
+.report{margin-top:24px}
+.stampmark{display:inline-block;border:4px solid var(--stamp);color:var(--stamp);font:700 22px "IBM Plex Mono",monospace;padding:4px 14px;border-radius:8px;transform:rotate(-4deg);margin-bottom:12px;animation:st .35s ease-out}
+.stampmark.okm{border-color:var(--ok);color:var(--ok)}
+@keyframes st{from{transform:rotate(-4deg) scale(1.8);opacity:0}}
+.items{list-style:none;padding:0;margin:12px 0;display:grid;gap:10px}
+.items li{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.items b{display:block}
+.items small{color:var(--mute)}
+.tg{display:inline-block;font-size:12px;font-weight:700;border-radius:4px;padding:0 6px;margin-inline-end:6px;color:#fff;background:var(--stamp)}
+.tg.m{background:none;color:var(--stamp);border:1px dashed var(--stamp)}
+.tg.g{background:var(--mute)}
+.score{font:600 clamp(40px,7vw,64px)/1 "IBM Plex Mono",monospace;margin:8px 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:20px 0}
+.stat{background:var(--bg);border-radius:10px;padding:12px 14px}
+.stat b{display:block;font:600 22px "IBM Plex Mono",monospace}
+.stat span{font-size:13px;color:var(--mute)}
+@media(max-width:900px){.desk{grid-template-columns:minmax(0,1fr)}.lc{position:static}}
+@media(max-width:700px){.hero .wrap{grid-template-columns:minmax(0,1fr)}.ship{order:-1;max-height:220px}}
+@media(prefers-reduced-motion:reduce){.pulse,.stampmark{animation:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<div class="brand">부산항 수출 데스크</div>
+<div class="hud"><span id="stage">대기 중</span><span>누적 이익 <b id="money">$0</b></span></div>
+</div></header>
+<main id="app"></main>
+<script>
+{
+const Q=[
+{tag:'인코텀즈',who:'바이어',sit:'"배는 우리 쪽 포워더가 잡겠습니다. 수출통관을 마치고 부산항에서 우리가 지정한 배에 실어 주기만 하면 됩니다."',ask:'바이어의 요구에 맞는 인코텀즈 조건은?',opts:['EXW Seoul (공장 인도)','FOB Busan (본선 인도)','CIF Los Angeles (운임·보험료 포함)','DAP Los Angeles (도착지 인도)'],ans:1,
+why:'FOB는 매도인이 수출통관을 마치고 매수인이 지정한 본선에 물품을 실으면 인도가 끝납니다. 운임은 매수인이 내고, 위험도 본선 적재 시점에 넘어갑니다. EXW는 수출통관까지 매수인 몫이고, CIF와 DAP는 매도인이 해상 운송을 책임집니다.',loss:'조건을 잘못 정해 운임을 이중으로 부담할 뻔했습니다.'},
+{tag:'인코텀즈',who:'바이어',sit:'"LA항 도착 기준으로, 해상운임과 적하보험료까지 포함된 가격으로 견적을 주세요. 수입통관과 관세는 우리가 처리합니다."',ask:'견적서에 쓸 조건은?',opts:['FOB Busan','CFR Los Angeles','CIF Los Angeles','DDP Los Angeles'],ans:2,
+why:'CIF 뒤에는 목적항을 씁니다. 매도인이 목적항까지 운임과 보험료를 부담합니다. CFR은 보험이 빠지고, DDP는 수입통관과 관세까지 매도인이 떠안습니다. FOB Busan에는 해상운임이 들어가지 않습니다.',loss:'견적 조건이 바이어 요구와 달라 재견적과 가격 조정이 필요해졌습니다.'},
+{tag:'위험 이전',who:'사고 발생',sit:'CIF Los Angeles로 계약하고 부산항에서 선적을 마쳤습니다. 태평양을 건너던 중 폭풍으로 화물 일부가 파손되었습니다.',ask:'운송 중 손해의 위험은 누가 부담할까요?',opts:['매도인 — 목적항까지 운임을 냈으므로','매수인 — 위험은 선적항 본선 적재 때 이미 넘어갔으므로','선사 — 운송 중 사고는 무조건 선사 책임','매도인과 매수인이 반씩 부담'],ans:1,
+why:'CIF에서 비용은 목적항까지 매도인이 내지만, 위험은 선적항에서 본선에 적재될 때 매수인에게 넘어갑니다. 그래서 매수인이 손해를 부담하고, 매도인이 매수인을 위해 가입한 보험으로 보험금을 청구합니다. 비용이 넘어가는 지점과 위험이 넘어가는 지점이 다르다는 것이 C조건의 핵심입니다.',loss:'책임이 없는 손해를 배상하겠다고 답해 손실을 떠안았습니다.'},
+{tag:'적하보험',who:'보험사',sit:'"CIF 계약이라고 하셨죠? 계약서와 신용장에 보험 조건에 대한 별도 합의가 없다면 최소한 어떤 조건으로 드릴까요?"',ask:'Incoterms 2020 CIF에서 매도인의 최소 보험 의무는?',opts:['ICC(A), 계약금액의 100%','ICC(C), 계약금액의 110%','ICC(A), 계약금액의 110%','보험 가입 의무 없음'],ans:1,
+why:'Incoterms 2020의 CIF는 ICC(C) 수준, 보험금액은 계약금액의 최소 110%가 기본입니다. CIP는 2020년 개정으로 ICC(A)가 기본이 되었습니다. 화장품처럼 파손 위험이 있는 물품은 바이어가 계약이나 신용장에서 ICC(A)를 따로 요구하는 경우가 많습니다.',loss:'보험 조건을 잘못 알고 있어 보험료를 과다 지출했습니다.'},
+{tag:'결제 방식',who:'영업팀장',sit:'"이번 바이어는 첫 거래이고 신용 정보도 부족해. 금액은 USD 48,000이야. 선금은 안 된다고 하니 그다음으로 우리에게 가장 안전한 방식으로 하자."',ask:'수출자에게 가장 안전한 결제 방식은?',opts:['D/A 60일 (인수인도조건)','선적 후 30일 사후송금 (T/T)','일람출급 취소불능 화환신용장 (L/C at sight)','청산계정 (O/A)'],ans:2,
+why:'신용장은 개설은행이 "서류가 조건과 일치하면 지급하겠다"고 확약하는 방식이라, 바이어의 신용이 불확실해도 은행 신용에 기댈 수 있습니다. D/A는 바이어가 어음을 인수만 하면 서류를 받아 물품을 찾아가므로 대금 회수 위험이 크고, 사후송금과 O/A는 바이어를 전적으로 믿어야 합니다.',loss:'바이어가 대금 지급을 미뤄 연체 이자와 추심 비용이 발생했습니다.'},
+{tag:'신용장 원칙',who:'은행 담당자',sit:'"신용장 대금을 받으시려면 서류를 제출하셔야 합니다. 저희가 무엇을 기준으로 심사하는지 알고 계시죠?"',ask:'신용장 거래에서 은행은 무엇을 기준으로 지급 여부를 판단할까요?',opts:['선적 전 물품을 직접 검사한 결과','매매계약서의 내용','제시된 서류가 신용장 조건과 일치하는지 여부','바이어가 물품에 만족하는지 여부'],ans:2,
+why:'UCP 600 제5조에 따라 은행은 서류로 거래하며 물품으로 거래하지 않습니다. 또 신용장은 매매계약과 독립적입니다(제4조). 그래서 물품이 멀쩡해도 서류에 작은 불일치가 있으면 지급이 거절될 수 있습니다. 다음 단계에서 이것을 직접 연습합니다.',loss:'원칙을 몰라 서류 준비를 소홀히 했고 심사 지연 비용이 생겼습니다.'}
+];
+const LC=[['신용장 번호','FPB-LC-260417'],['개설은행','First Pacific Bank, Los Angeles'],['개설의뢰인 (바이어)','Sunrise Beauty Inc., Los Angeles, USA'],['수익자 (우리 회사)','Hanbit Cosmetics Co., Ltd., Seoul, Korea'],['금액','USD 48,000.00'],['물품','2,000 units of Hydrating Facial Cream 50ml at USD 24.00 per unit CIF Los Angeles'],['선적항 → 양륙항','Busan, Korea → Los Angeles, USA'],['최종 선적일','2026-12-10'],['유효기일','2026-12-31'],['서류 제시기간','선적일 후 21일 이내 (유효기일 이내)'],['분할선적 / 환적','불허 / 허용'],['요구 서류','① 서명된 상업송장 3부 ② 무고장 선적 해상 선하증권 전통, to order of First Pacific Bank, 통지처 개설의뢰인, "Freight Prepaid" 표시 ③ 보험증권: 송장금액의 110%, ICC(A), USD ④ 포장명세서']];
+const DOCS=[
+{id:'inv',t:'상업송장 (Commercial Invoice)',rows:[['issuer','발행인','Hanbit Cosmetics Co., Ltd., Seoul, Korea'],['buyer','수신인','Sunrise Beauty Inc., Los Angeles, USA'],['desc','물품명','Hydrating Facial Cream 50ml'],['qty','수량','2,000 units'],['price','단가 / 조건','USD 24.00 per unit, CIF Los Angeles'],['amt','총액','USD 48,000.00'],['lc','신용장 번호','FPB-LC-260417']]},
+{id:'pl',t:'포장명세서 (Packing List)',rows:[['desc','물품명','Hydrating Facial Cream 50ml'],['qty','수량','2,000 units'],['pack','포장','100 cartons (20 units/carton)'],['wt','총중량','1,250 kg']]},
+{id:'bl',t:'선하증권 (Bill of Lading)',rows:[['shipper','송하인','Hanbit Cosmetics Co., Ltd.'],['cons','수하인','To order of First Pacific Bank'],['notify','통지처','Sunrise Beauty Inc., Los Angeles, USA'],['pol','선적항 → 양륙항','Busan, Korea → Los Angeles, USA'],['date','본선 적재일','2026-12-08'],['frt','운임','FREIGHT PREPAID'],['rmk','비고','Shipped on board in apparent good order and condition'],['orig','원본 수','3/3 (full set)']]},
+{id:'ins',t:'보험증권 (Insurance Policy)',rows:[['amt','보험금액','USD 52,800.00'],['cov','담보 조건','Institute Cargo Clauses (A)'],['route','구간','Busan → Los Angeles'],['date','발행일','2026-12-07']]},
+{id:'pres',t:'은행 제출 정보',rows:[['date','서류 제시일','2026-12-15'],['bank','제시 은행','Korea Trade Bank, Seoul']]}
+];
+const R=[
+{name:'서류 초안 1',bad:{
+'inv.desc':['Moisturizing Face Cream 50ml','물품 명세 불일치','UCP 600 제18조(c): 상업송장의 물품 명세는 신용장 기재와 일치해야 합니다. 같은 물건이라도 이름을 바꿔 쓰면 하자입니다.'],
+'bl.frt':['FREIGHT COLLECT','운임 표시 불일치','CIF 조건이고 신용장도 "Freight Prepaid"를 요구합니다. "Freight Collect"는 도착지에서 운임을 받는다는 뜻이라 조건과 맞지 않습니다.'],
+'ins.date':['2026-12-12','보험서류 일자 지연','UCP 600 제28조(e): 보험서류 일자는 선적일보다 늦으면 안 됩니다(선적일 전부터 담보한다는 표시가 없는 한). 선적일은 12월 8일인데 보험증권은 12월 12일에 발행되었습니다.']},trap:{}},
+{name:'서류 초안 2',bad:{
+'bl.date':['2026-12-14','선적 기한 초과','본선 적재일 12월 14일은 신용장의 최종 선적일 12월 10일을 넘겼습니다. 선적 지연(late shipment)은 대표적인 하자입니다.'],
+'bl.rmk':['3 cartons torn, contents wet','고장부 선하증권','UCP 600 제27조: 은행은 무고장(clean) 운송서류만 받습니다. 물품이나 포장에 결함이 있다고 적힌 선하증권은 고장부(foul) 선하증권이 됩니다.'],
+'ins.amt':['USD 48,000.00','보험금액 부족','신용장이 송장금액의 110%를 요구했으므로 USD 52,800.00 이상이어야 합니다. 신용장에 요구가 없더라도 UCP 600 제28조(f)(ii)는 CIF 금액의 110%를 최소 기준으로 봅니다.']},trap:{}},
+{name:'서류 초안 3',bad:{
+'pl.qty':['1,950 units','서류 간 수량 상충','UCP 600 제14조(d): 서류의 내용은 다른 서류나 신용장과 상충하면 안 됩니다. 포장명세서는 1,950개, 송장은 2,000개라 서로 맞지 않습니다.'],
+'pres.date':['2027-01-05','제시기간·유효기일 경과','UCP 600 제14조(c)와 제6조(d): 서류는 선적일 후 21일 이내, 그리고 유효기일 안에 제시해야 합니다. 선적일(12월 8일) 후 21일은 12월 29일이고 유효기일은 12월 31일인데, 1월 5일에 제시했습니다.']},
+trap:{'inv.buyer':['Sunrise Beauty Inc., 1200 Wilshire Blvd, Los Angeles, CA 90017, USA','함정: 주소가 더 자세함','하자가 아닙니다. UCP 600 제14조(j): 개설의뢰인 주소는 신용장과 똑같지 않아도 같은 나라 안이면 됩니다. 이름이 같고 주소가 더 자세할 뿐이므로 문제없습니다. (단, 선하증권의 수하인·통지처에 나오는 주소는 신용장대로 써야 합니다.)']}}
+];
+const P={qR:800,qW:-500,hit:600,miss:-800,fls:-200};
+const app=document.querySelector('#app'),mEl=document.querySelector('#money'),stEl=document.querySelector('#stage');
+const fmt=n=>(n<0?'−':'')+'$'+Math.abs(n).toLocaleString('en-US');
+const label={};DOCS.forEach(d=>d.rows.forEach(r=>label[d.id+'.'+r[0]]=d.t.split(' (')[0]+' · '+r[1]));
+let S;
+const reset=()=>{S={qi:0,ri:0,money:0,picked:null,flags:new Set(),done:false,notes:[],qOk:0,hit:0,tot:0,fls:0}};
+let best=null;try{best=JSON.parse(localStorage.getItem('tradeDeskBest'))}catch(e){}
+function hud(txt){stEl.textContent=txt;mEl.textContent=fmt(S.money);mEl.classList.toggle('neg',S.money<0)}
+function add(n){S.money+=n;mEl.classList.remove('pulse');void mEl.offsetWidth;mEl.classList.add('pulse');hud(stEl.textContent)}
+const ship=`<svg class="ship" viewBox="0 0 560 320" role="img" aria-label="부산항에서 컨테이너를 싣고 출항하는 선박">
+<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b7c86"/><stop offset="1" stop-color="#0f5560"/></linearGradient>
+<g id="ct"><rect width="44" height="24" rx="2"/><rect width="44" height="5" fill="#000" opacity=".18" y="19"/><rect width="44" height="3" fill="#fff" opacity=".25"/></g></defs>
+<rect width="560" height="320" rx="16" fill="url(#sky)"/>
+<circle cx="460" cy="70" r="34" fill="#f7e9c8" opacity=".9"/>
+<g fill="#0b434c"><rect x="40" y="120" width="10" height="120"/><rect x="40" y="120" width="120" height="10"/><rect x="140" y="130" width="3" height="50" fill="#0b434c"/></g>
+<rect x="128" y="180" width="28" height="16" fill="#e0a43a"/>
+<g><use href="#ct" x="160" y="146" fill="#cf3229"/><use href="#ct" x="206" y="146" fill="#e8eef0"/><use href="#ct" x="252" y="146" fill="#2f8f9b"/><use href="#ct" x="298" y="146" fill="#cf3229"/>
+<use href="#ct" x="160" y="172" fill="#2f8f9b"/><use href="#ct" x="206" y="172" fill="#cf3229"/><use href="#ct" x="252" y="172" fill="#e0a43a"/><use href="#ct" x="298" y="172" fill="#e8eef0"/><use href="#ct" x="344" y="172" fill="#2f8f9b"/>
+<use href="#ct" x="206" y="198" fill="#e0a43a"/><use href="#ct" x="252" y="198" fill="#e8eef0"/><use href="#ct" x="298" y="198" fill="#cf3229"/><use href="#ct" x="344" y="198" fill="#cf3229"/></g>
+<rect x="400" y="160" width="46" height="62" fill="#e8eef0"/><rect x="408" y="170" width="30" height="8" fill="#0b434c"/><rect x="418" y="140" width="10" height="22" fill="#cf3229"/>
+<path d="M120 222 H480 L452 268 H150 Z" fill="#13211f"/><path d="M120 222 H480 L476 230 H124 Z" fill="#cf3229"/>
+<text x="190" y="252" fill="#e8eef0" font-family="IBM Plex Mono,monospace" font-size="14" font-weight="600">HANBIT · BUSAN</text>
+<path d="M0 262 Q35 252 70 262 T140 262 T210 262 T280 262 T350 262 T420 262 T490 262 T560 262 V320 H0 Z" fill="#0b3f47"/>
+<path d="M0 280 Q35 272 70 280 T140 280 T210 280 T280 280 T350 280 T420 280 T490 280 T560 280 V320 H0 Z" fill="#082f35"/></svg>`;
+function intro(){reset();hud('대기 중');
+app.innerHTML=`<section class="band hero"><div class="wrap"><div>
+<h1>오늘 첫 수출 건이 들어왔습니다</h1>
+<p class="lead">당신은 한빛코스메틱 해외영업팀 신입입니다. 미국 LA의 바이어에게 수분 크림 2,000개를 수출합니다. 계약 조건을 정하고, 은행에 낼 선적서류를 검토해 대금을 받아 내세요. 판단이 맞으면 이익이 쌓이고, 틀리면 손실이 납니다.</p>
+<ol class="steps"><li><b>1단계 · 계약 조건 (6문제)</b>인코텀즈, 위험 이전, 적하보험, 결제 방식, 신용장 원칙</li>
+<li><b>2단계 · 서류 심사 (3건)</b>신용장과 상업송장, 선하증권, 보험증권을 대조해 하자 찾기 (UCP 600)</li></ol>
+<button class="btn" data-a="start">업무 시작</button><a class="lnk" href="training.html">용어 먼저 연습하기</a>
+${best!==null?`<p class="best">내 최고 기록 ${fmt(best)}</p>`:''}
+</div>${ship}</div></section>`}
+function renderQ(){const q=Q[S.qi];S.picked=null;hud(`1단계 · ${S.qi+1}/${Q.length}`);
+app.innerHTML=`<section class="band"><div class="card">
+<p class="kicker">1단계 계약 조건 · <b>${S.qi+1} / ${Q.length}</b> · ${q.tag}</p>
+<div class="sit"><span class="who">${q.who}</span><p>${q.sit}</p></div>
+<h2>${q.ask}</h2>
+<div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-a="pick" data-i="${i}">${o}</button>`).join('')}</div>
+<div id="fb"></div></div></section>`;window.scrollTo(0,0)}
+function pick(i){if(S.picked!==null)return;const q=Q[S.qi],ok=i===q.ans;S.picked=i;
+document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===q.ans)b.classList.add('right');else if(j===i)b.classList.add('wrong')});
+if(ok)S.qOk++;else S.notes.push(['1단계 · '+q.tag,q.ask+' → 정답: '+q.opts[q.ans]]);
+add(ok?P.qR:P.qW);
+const last=S.qi===Q.length-1;
+document.querySelector('#fb').innerHTML=`<div class="fb ${ok?'good':'bad'}"><p class="delta">${ok?'정답 · 계약 이익 '+fmt(P.qR):'오답 · 손실 '+fmt(P.qW)}</p>${ok?'':`<p>${q.loss}</p>`}<p>${q.why}</p></div>
+<button class="btn alt next" data-a="nextQ">${last?'2단계 서류 심사로':'다음 문제'}</button>`;
+document.querySelector('.next').focus({preventScroll:true})}
+const val=(r,k,b)=>r.bad[k]?r.bad[k][0]:r.trap[k]?r.trap[k][0]:b;
+function renderDoc(){const r=R[S.ri];S.flags=new Set();S.done=false;hud(`2단계 · ${S.ri+1}/${R.length}`);
+app.innerHTML=`<section class="band"><div class="wrap">
+<div class="bar"><div><p class="kicker">2단계 서류 심사 · <b>${S.ri+1} / ${R.length}</b></p><h2 style="margin:4px 0 0">${r.name}: 은행에 내기 전에 하자를 찾으세요</h2>
+<p>신입 동료가 작성한 서류입니다. 왼쪽 신용장 조건과 맞지 않는 항목을 눌러 표시하세요. 찾은 하자는 고쳐서 내고, 놓친 하자는 은행이 지급을 거절합니다. 멀쩡한 항목을 표시하면 시간만 낭비됩니다.</p></div>
+<button class="btn" data-a="submit" id="sub">검토 완료 (<span id="cnt">0</span>개 표시)</button></div>
+<div id="rep"></div>
+<div class="desk"><aside class="lc"><h3>신용장 조건</h3><dl>${LC.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></aside>
+<div class="docs">${DOCS.map(d=>`<article class="doc"><h3>${d.t}</h3>${d.rows.map(([k,l,v])=>{const key=d.id+'.'+k;return `<button class="f" data-a="flag" data-k="${key}" aria-pressed="false"><span class="l">${l}</span><span class="v">${val(r,key,v)}</span></button>`}).join('')}</article>`).join('')}</div></div>
+</div></section>`;window.scrollTo(0,0)}
+function flag(b){if(S.done)return;const k=b.dataset.k;if(S.flags.has(k))S.flags.delete(k);else S.flags.add(k);
+const on=S.flags.has(k);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);document.querySelector('#cnt').textContent=S.flags.size}
+function submit(){if(S.done)return;S.done=true;const r=R[S.ri],bad=Object.keys(r.bad);
+const hits=bad.filter(k=>S.flags.has(k)),miss=bad.filter(k=>!S.flags.has(k)),fls=[...S.flags].filter(k=>!r.bad[k]);
+S.hit+=hits.length;S.tot+=bad.length;S.fls+=fls.length;
+const d=hits.length*P.hit+miss.length*P.miss+fls.length*P.fls;add(d);
+miss.forEach(k=>S.notes.push(['2단계 · '+r.bad[k][1],label[k]+': '+r.bad[k][2]]));
+fls.forEach(k=>{if(r.trap[k])S.notes.push(['2단계 · '+r.trap[k][1],r.trap[k][2]])});
+document.querySelectorAll('.f').forEach(b=>{const k=b.dataset.k;b.disabled=true;b.classList.remove('on');
+if(hits.includes(k))b.classList.add('hit');else if(miss.includes(k))b.classList.add('miss');else if(fls.includes(k))b.classList.add('fls')});
+const sub=document.querySelector('#sub');sub.textContent=S.ri===R.length-1?'최종 결과 보기':'다음 서류';sub.dataset.a='nextR';sub.className='btn alt';
+const li=(cls,tag,k,t,e)=>`<li><span class="tg ${cls}">${tag}</span><b style="display:inline">${t}</b><br><small>${label[k]}</small><p style="margin:6px 0 0">${e}</p></li>`;
+document.querySelector('#rep').innerHTML=`<div class="card report" style="max-width:none;margin-bottom:24px">
+<span class="stampmark ${miss.length?'':'okm'}">${miss.length?'DISCREPANT · 지급 거절':'COMPLIANT · 대금 수령'}</span>
+<p class="delta" style="font:600 18px 'IBM Plex Mono',monospace;margin:0">이번 건 ${d>=0?'+':''}${fmt(d)} <small style="color:var(--mute);font:14px 'IBM Plex Sans KR'">· 발견 ${hits.length}/${bad.length} · 잘못 표시 ${fls.length}</small></p>
+<ul class="items">${hits.map(k=>li('','발견 +'+fmt(P.hit),k,r.bad[k][1],r.bad[k][2])).join('')}${miss.map(k=>li('m','놓침 '+fmt(P.miss),k,r.bad[k][1],r.bad[k][2])).join('')}${fls.map(k=>li('g','오표시 '+fmt(P.fls),k,r.trap[k]?r.trap[k][1]:'하자 아님',r.trap[k]?r.trap[k][2]:'이 항목은 신용장 조건이나 다른 서류와 일치합니다.')).join('')}</ul>
+${miss.length?'<p style="margin:0;color:var(--mute)">놓친 하자 때문에 은행이 지급을 거절했습니다. 실무에서는 하자 수수료가 붙고, 바이어가 하자를 받아들일 때까지 대금 회수가 늦어집니다.</p>':''}</div>`;
+document.querySelector('#rep').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'})}
+function end(){hud('업무 종료');const max=Q.length*P.qR+R.reduce((a,r)=>a+Object.keys(r.bad).length,0)*P.hit;
+const pct=S.money/max,g=pct>=.85?['A','수석 무역 담당자 감입니다.']:pct>=.65?['B','실무 투입 가능. 오답 노트만 정리하세요.']:pct>=.4?['C','기본은 잡혔습니다. 한 번 더 도전해 보세요.']:['D','이론을 다시 보고 재도전하세요.'];
+let nb=false;try{if(best===null||S.money>best){best=S.money;localStorage.setItem('tradeDeskBest',JSON.stringify(best));nb=true}}catch(e){}
+app.innerHTML=`<section class="band"><div class="card">
+<p class="kicker">업무 종료 · 등급 <b>${g[0]}</b></p><div class="score">${fmt(S.money)}</div><p style="margin:0">${g[1]} 최대 가능 이익은 ${fmt(max)}입니다.${nb?' 최고 기록을 새로 세웠습니다.':''}</p>
+<div class="grid2"><div class="stat"><b>${S.qOk}/${Q.length}</b><span>계약 조건 정답</span></div><div class="stat"><b>${S.hit}/${S.tot}</b><span>서류 하자 발견</span></div><div class="stat"><b>${S.fls}</b><span>잘못 표시한 항목</span></div></div>
+<h3>오답 노트</h3>${S.notes.length?`<ul class="items">${S.notes.map(([t,e])=>`<li><b>${t}</b><p style="margin:4px 0 0">${e}</p></li>`).join('')}</ul>`:'<p>틀린 것이 없습니다. 완벽합니다.</p>'}
+<button class="btn" data-a="start">처음부터 다시</button><a class="lnk dk" href="training.html">틀린 용어 연습하러 가기</a></div></section>`;window.scrollTo(0,0)}
+app.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
+if(a==='start'){reset();renderQ()}
+else if(a==='pick')pick(+b.dataset.i);
+else if(a==='nextQ'){if(++S.qi<Q.length)renderQ();else renderDoc()}
+else if(a==='flag')flag(b);
+else if(a==='submit')submit();
+else if(a==='nextR'){if(++S.ri<R.length)renderDoc();else end()}});
+intro();
+}
+</script>
+</body>
+</html>
