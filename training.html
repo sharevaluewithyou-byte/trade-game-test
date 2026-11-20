@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>무역 용어 트레이닝 센터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 「부산항 수출 데스크」와 같은 회사의 신입 연수실. 차분하고 실무적.
+   IDEA: 연수실 책상 위 단어 카드, 받은 편지함, 서류 양식.
+   PICTURE: 허브에서는 모드 카드 다섯 장, 각 모드에서는 카드·이메일·서류 자체가 그림.
+   COLOUR and TYPE: 항구 청록 띠, 종이 흰색, 은행 도장 빨강 하나. IBM Plex Sans KR + 용어는 Plex Mono.
+   LAYOUT: 상단 HUD 띠, 가운데 한 단 카드(최대 820px), 600px 아래 한 줄씩 쌓기. */
+:root{color-scheme:light dark;
+--bg:#eef2f1;--ink:#13211f;--mute:#566664;--sea:#0f5560;--sea2:#0b434c;--paper:#fffdf8;--line:#d3dcda;--stamp:#cf3229;--stampbg:#fdecea;--ok:#0f6f7a;--okbg:#e3f3f4}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0c1719;--ink:#e6eeec;--mute:#9fb2af;--sea:#0b3f47;--sea2:#082f35;--paper:#162629;--line:#2a3e42;--stampbg:#3a1b19;--ok:#58c2cc;--okbg:#11343a}}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0c1719;--ink:#e6eeec;--mute:#9fb2af;--sea:#0b3f47;--sea2:#082f35;--paper:#162629;--line:#2a3e42;--stampbg:#3a1b19;--ok:#58c2cc;--okbg:#11343a}
+:root[data-theme=light]{color-scheme:light}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans KR",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,4vw,48px) max(5vw,16px)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--ok);outline-offset:2px}
+.top{background:var(--sea2);color:#eaf4f3;position:sticky;top:0;z-index:5}
+.top .in{max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between;padding:10px max(5vw,16px)}
+.brand{font-weight:700;font-size:17px;background:none;border:0;color:#fff;padding:6px 0;min-height:44px}
+.hud{font-size:14px;color:#b9d3d1;display:flex;gap:16px;align-items:baseline}
+.hud b{font:600 18px "IBM Plex Mono",monospace;color:#fff;white-space:nowrap}
+.hero{background:var(--sea);color:#eef6f5}
+.hero .in{max-width:1240px;margin:0 auto}
+h1{font-size:clamp(32px,5vw,48px);line-height:1.05;margin:0 0 12px;text-wrap:balance}
+h2{font-size:clamp(22px,3vw,28px);line-height:1.25;margin:6px 0 18px;text-wrap:balance}
+h3{font-size:17px;margin:0 0 6px}
+.lead{font-size:17px;max-width:40em;color:#cfe3e1;margin:0}
+.modes{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.mode{text-align:start;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;min-height:170px;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 0 var(--line)}
+.mode:hover{border-color:var(--ok)}
+.mode .tag{font-size:13px;color:var(--ok);font-weight:600}
+.mode p{margin:0;color:var(--mute);font-size:15px}
+.mode .rec{margin-top:auto;font:600 14px "IBM Plex Mono",monospace;color:var(--ink)}
+.mode.main{background:var(--okbg);border-color:var(--ok)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:clamp(18px,3vw,32px);max-width:820px;margin:0 auto;box-shadow:0 6px 24px rgba(0,0,0,.06)}
+.kicker{color:var(--mute);font-size:14px;margin:0}.kicker b{color:var(--ink)}
+.btn{background:var(--stamp);color:#fff;border:0;border-radius:10px;padding:12px 24px;min-height:48px;font-weight:700}
+.btn.alt{background:var(--sea)}.btn.ghost{background:none;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}
+.chip{border:2px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 14px;min-height:40px;font-size:15px}
+.chip.on{border-color:var(--ok);background:var(--okbg);font-weight:600}
+.flash{width:100%;min-height:260px;border:2px solid var(--line);border-radius:14px;background:var(--bg);padding:28px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px}
+.flash .big{font:600 clamp(30px,6vw,44px)/1.1 "IBM Plex Mono",monospace;overflow-wrap:anywhere}
+.flash .ko{font-size:clamp(26px,5vw,36px);font-weight:700;line-height:1.2}
+.flash .sub{color:var(--mute)}
+.flash .hint{font-size:13px;color:var(--mute);margin-top:8px}
+.meter{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:10px 0 0}.meter i{display:block;height:100%;background:var(--ok);transition:width .3s}
+.sit{background:var(--bg);border-radius:12px;padding:16px 18px;font-size:17px;margin:14px 0 18px}
+.opts{display:grid;gap:10px}
+.opt{text-align:start;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:12px 16px;min-height:52px}
+.opt .m{font:600 15px "IBM Plex Mono",monospace}
+.opt:hover:not(:disabled){border-color:var(--ok)}.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--okbg)}.opt.wrong{border-color:var(--stamp);background:var(--stampbg)}
+.fb{margin-top:18px;border-radius:12px;padding:16px 18px;border-left:6px solid}
+.fb.good{background:var(--okbg);border-color:var(--ok)}.fb.bad{background:var(--stampbg);border-color:var(--stamp)}
+.fb p{margin:4px 0}
+.mail{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0}
+.mail .hd{background:var(--bg);padding:12px 16px;font-size:14px;color:var(--mute);border-bottom:1px solid var(--line)}
+.mail .hd b{color:var(--ink)}
+.mail .bd{padding:16px;font-size:16px;line-height:1.85;white-space:pre-line}
+.term{font:600 15px "IBM Plex Mono",monospace;background:var(--okbg);border:0;border-bottom:2px solid var(--ok);border-radius:4px;padding:1px 6px;margin:0 1px}
+.term.sel{outline:3px solid var(--ok)}
+.term.r{background:var(--okbg);border-color:var(--ok)}.term.r::after{content:" ✓"}
+.term.w{background:var(--stampbg);border-color:var(--stamp)}.term.w::after{content:" ✗";color:var(--stamp)}
+.gist{background:var(--bg);border-radius:10px;padding:14px 16px;margin-top:14px}
+.form{border:2px solid var(--ink);border-radius:6px;padding:4px 0;margin:14px 0;background:var(--paper)}
+.form .fh{font-weight:700;padding:8px 16px;border-bottom:2px solid var(--ink)}
+.fld{display:grid;grid-template-columns:180px minmax(0,1fr);gap:10px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line)}
+.fld:last-child{border-bottom:0}
+.fld label{font-size:14px;color:var(--mute)}
+.fld select{width:100%;min-height:44px;font-size:16px;border:2px solid var(--line);border-radius:8px;background:var(--bg);padding:6px 10px;font-family:"IBM Plex Mono",monospace}
+.fld.r select{border-color:var(--ok);background:var(--okbg)}.fld.w select{border-color:var(--stamp);background:var(--stampbg)}
+.fld .why{grid-column:1/-1;font-size:14px;margin:0}
+.search{width:100%;min-height:48px;font-size:16px;border:2px solid var(--line);border-radius:10px;background:var(--bg);padding:10px 14px}
+.gl{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
+.gl li{border-bottom:1px solid var(--line);padding:10px 2px}
+.gl .m{font:600 16px "IBM Plex Mono",monospace}.gl .e{color:var(--mute);font-size:14px}
+.gl .c{float:right;font-size:12px;color:var(--ok);border:1px solid var(--ok);border-radius:4px;padding:0 6px}
+.score{font:600 clamp(40px,7vw,60px)/1 "IBM Plex Mono",monospace;margin:8px 0}
+.note{font-size:13px;color:var(--mute);margin-top:14px}
+@media(max-width:600px){.fld{grid-template-columns:minmax(0,1fr);gap:4px}}
+@media(prefers-reduced-motion:reduce){.meter i{transition:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+<button class="brand" data-a="home">무역 용어 트레이닝 센터</button>
+<div class="hud"><span>오늘 정답 <b id="okc">0</b></span><span>정답률 <b id="rate">–</b></span></div>
+</div></header>
+<main id="app"></main>
+<script>
+{
+const T=[
+['offer','Offer','','청약','일정한 조건으로 계약을 맺자는 의사 표시. 상대가 그대로 승낙하면 계약이 성립합니다.','계약'],
+['counter','Counter Offer','','반대청약','받은 청약의 조건을 바꿔 다시 제안하는 것. 원래 청약은 거절된 것으로 봅니다.','계약'],
+['firm','Firm Offer','','확정청약','승낙 기한을 정한 청약. 기한 안에 승낙하면 바로 계약이 성립하고, 그동안 청약자는 철회하기 어렵습니다.','계약'],
+['po','P/O','Purchase Order','주문서','수입자가 물품을 주문하면서 보내는 서류.','계약'],
+['pi','Proforma Invoice','','견적송장','계약 전에 보내는 견적용 송장. 수입자가 수입 허가나 L/C 개설에 쓰기도 합니다.','계약'],
+['claim','Claim','','클레임','계약 위반이나 물품 하자로 생긴 손해에 대해 상대에게 배상을 청구하는 것.','계약'],
+['arb','Arbitration','','중재','분쟁을 법원 대신 당사자가 고른 중재인의 판정으로 해결하는 방법. 판정은 최종적이고 구속력이 있습니다.','계약'],
+['lc','L/C','Letter of Credit','신용장','개설은행이 서류가 조건과 일치하면 대금을 지급하겠다고 수출자에게 확약하는 증서.','결제'],
+['app','Applicant','','개설의뢰인','은행에 신용장 개설을 신청하는 사람. 보통 수입자입니다.','결제'],
+['ben','Beneficiary','','수익자','신용장 대금을 받을 권리가 있는 사람. 보통 수출자입니다.','결제'],
+['iss','Issuing Bank','','개설은행','수입자의 신청을 받아 신용장을 개설하고 지급을 확약하는 은행.','결제'],
+['adv','Advising Bank','','통지은행','개설은행의 요청으로 수출자에게 신용장이 도착했음을 알려 주는 수출국 은행.','결제'],
+['nego','Negotiation','','매입 (네고)','은행이 수출자의 환어음과 서류를 사들이고 대금을 먼저 지급하는 것.','결제'],
+['disc','Discrepancy','','하자 (불일치)','제시된 서류가 신용장 조건이나 다른 서류와 맞지 않는 것. 은행이 지급을 거절할 수 있습니다.','결제'],
+['dp','D/P','Documents against Payment','지급인도조건','수입자가 대금을 지급해야 선적서류를 넘겨받는 추심 방식.','결제'],
+['da','D/A','Documents against Acceptance','인수인도조건','수입자가 환어음을 인수(만기 지급 약속)만 하면 선적서류를 넘겨받는 추심 방식.','결제'],
+['tt','T/T','Telegraphic Transfer','전신환 송금','은행 간 전신으로 대금을 보내는 송금 방식.','결제'],
+['bl','B/L','Bill of Lading','선하증권','운송인이 화물을 받아 선적했음을 증명하고, 목적지에서 화물을 인도받을 권리를 나타내는 증권.','운송'],
+['clean','Clean B/L','','무고장 선하증권','화물이나 포장에 결함이 있다는 표시가 없는 선하증권.','운송'],
+['sur','Surrender B/L','','서렌더 선하증권','선적지에서 원본 B/L을 회수해, 수입자가 원본 없이 화물을 찾을 수 있게 한 것.','운송'],
+['lg','L/G','Letter of Guarantee','수입화물선취보증서','원본 B/L이 도착하기 전에 은행 보증으로 화물을 먼저 찾을 때 쓰는 서류.','운송'],
+['shp','Shipper','','송하인','화물을 보내는 사람. B/L에 적히며 보통 수출자입니다.','운송'],
+['cons','Consignee','','수하인','B/L상 화물을 받을 사람. 신용장 거래에서는 "To order of 은행"처럼 지시식으로 쓰기도 합니다.','운송'],
+['np','Notify Party','','착화 통지처','화물이 도착하면 운송인이 연락하는 상대. 보통 수입자입니다.','운송'],
+['etd','ETD','Estimated Time of Departure','출항 예정 일시','선박이 선적항을 떠날 예정인 날짜와 시각.','운송'],
+['eta','ETA','Estimated Time of Arrival','도착 예정 일시','선박이 목적항에 도착할 예정인 날짜와 시각.','운송'],
+['fcl','FCL','Full Container Load','컨테이너 단위 화물','한 화주의 화물로 컨테이너 하나를 채워 보내는 것.','운송'],
+['lcl','LCL','Less than Container Load','소량 혼재 화물','컨테이너 하나를 채우지 못해 다른 화주의 화물과 함께 싣는 것.','운송'],
+['cy','CY','Container Yard','컨테이너 야적장','컨테이너를 쌓아 두고 인수·인도하는 장소. 주로 FCL 화물이 오갑니다.','운송'],
+['cfs','CFS','Container Freight Station','컨테이너 화물 조작장','LCL 화물을 모아 컨테이너에 넣거나 꺼내 나누는 작업장.','운송'],
+['teu','TEU','Twenty-foot Equivalent Unit','20피트 컨테이너 환산 단위','컨테이너 물동량을 20피트 컨테이너 기준으로 센 단위. 40피트는 2 TEU입니다.','운송'],
+['ci','C/I','Commercial Invoice','상업송장','수출자가 발행하는 거래 명세서. 물품, 수량, 단가, 총액을 적습니다.','서류'],
+['pl','P/L','Packing List','포장명세서','포장 단위별 내용물, 수량, 중량, 부피를 적은 서류.','서류'],
+['co','C/O','Certificate of Origin','원산지증명서','물품의 원산지를 증명하는 서류. FTA 관세 혜택을 받을 때 필요합니다.','서류'],
+['mark','Shipping Mark','','화인','화물 포장 겉면에 표시하는 기호, 번호, 목적지 등. 화물을 구별하는 데 씁니다.','서류'],
+['hs','HS Code','','HS 품목분류 번호','국제적으로 통일된 상품 분류 번호. 관세율과 수출입 규제를 확인하는 기준입니다.','서류'],
+['thc','THC','Terminal Handling Charge','터미널 화물 처리비','컨테이너 터미널에서 화물을 싣고 내리고 옮기는 데 드는 비용.','비용'],
+['dem','Demurrage','','체화료 (디머리지)','무료 기간이 지나도 컨테이너를 터미널에서 반출하지 않을 때 내는 비용.','비용'],
+['det','Detention','','지체료 (디텐션)','컨테이너를 터미널 밖으로 가져간 뒤 반납 기한을 넘겼을 때 내는 비용.','비용'],
+['prepaid','Freight Prepaid','','운임 선불','운임을 선적지에서 미리 낸다는 표시. CFR·CIF 같은 C조건에서 쓰입니다.','비용'],
+['collect','Freight Collect','','운임 후불','운임을 목적지에서 수하인이 낸다는 표시. FOB 같은 F조건에서 흔합니다.','비용']
+].map(([id,a,e,k,d,c])=>({id,a,e,k,d,c}));
+const TM=Object.fromEntries(T.map(t=>[t.id,t]));
+const CATS=['계약','결제','운송','서류','비용'];
+const SIT=[
+['lg','배는 이미 LA항에 도착했는데 원본 B/L이 아직 오지 않았습니다. 바이어는 은행 보증을 받아 화물을 먼저 찾고 싶어 합니다.','은행이 보증하는 L/G를 선사에 내면 원본 B/L 없이 화물을 찾을 수 있습니다. 나중에 원본 B/L이 오면 선사에 돌려주고 보증을 풀어야 합니다.'],
+['sur','5년째 거래 중인 단골 바이어입니다. 원본 B/L을 우편으로 보내면 늦으니, 선적지에서 원본을 회수하고 바이어가 원본 없이 화물을 찾게 해 달라고 합니다.','Surrender B/L은 원본을 선적지 선사에 반납해 바이어가 원본 없이 화물을 찾게 합니다. 대금을 받기 전에 화물이 넘어가므로 믿을 수 있는 거래처나 선금을 받은 경우에만 씁니다.'],
+['lcl','이번 주문은 박스 30개뿐이라 컨테이너 하나를 다 채우지 못합니다. 포워더가 다른 회사 화물과 함께 싣자고 합니다.','컨테이너를 채우지 못한 소량 화물은 LCL로 보내며, CFS에서 다른 화주 화물과 함께 컨테이너에 넣습니다.'],
+['dem','통관 서류가 늦어져 컨테이너가 무료 기간이 지나도록 부산 터미널 안에 머물러 있습니다. 선사가 하루 단위로 비용을 청구했습니다.','터미널 안에서 무료 기간을 넘긴 비용은 Demurrage입니다. 터미널 밖으로 가져간 뒤 반납이 늦어지는 Detention과 구별하세요.'],
+['det','컨테이너를 공장으로 가져와 짐을 실었는데, 작업이 늦어져 빈 컨테이너 반납 기한을 넘겼습니다.','터미널 밖으로 반출한 컨테이너를 기한 안에 돌려주지 않아 내는 비용이 Detention입니다.'],
+['nego','선적을 마치고 서류를 은행에 냈습니다. 은행이 서류를 심사한 뒤, 해외 개설은행에서 돈이 오기 전에 우리에게 대금을 먼저 지급해 주었습니다.','은행이 수출자의 서류와 환어음을 사들여 대금을 먼저 주는 것을 매입(Negotiation, 흔히 "네고")이라고 합니다.'],
+['da','바이어가 환어음에 "90일 뒤에 지급하겠다"고 서명만 하고 선적서류를 받아 갔습니다.','어음 인수만으로 서류를 넘겨주는 방식이 D/A입니다. 만기에 바이어가 돈을 안 내면 대금 회수가 어려워 수출자에게 위험이 큽니다.'],
+['dp','추심은행이 바이어에게 "대금을 내야 선적서류를 드립니다"라고 했습니다.','대금 지급과 서류 인도를 맞바꾸는 방식이 D/P입니다. 은행의 지급 확약은 없지만 D/A보다는 안전합니다.'],
+['firm','"12월 5일까지 승낙하시면 이 가격으로 확정합니다"라는 조건을 달아 바이어에게 제안서를 보냈습니다.','승낙 기한을 정한 청약이 Firm Offer입니다. 기한 안에 상대가 그대로 승낙하면 계약이 성립합니다.'],
+['counter','우리가 단가 USD 24.00을 제시했더니, 바이어가 "USD 22.50이면 계약하겠다"고 답장했습니다.','조건을 바꾼 답장은 승낙이 아니라 Counter Offer입니다. 원래 청약은 거절된 것이 되고, 이번에는 우리가 승낙 여부를 정해야 합니다.'],
+['pi','바이어가 수입 허가를 받고 신용장을 열려면 계약 전에 가격과 조건이 적힌 송장이 필요하다고 합니다.','계약 전 견적용으로 보내는 송장이 Proforma Invoice입니다. 선적 후 대금 청구에 쓰는 Commercial Invoice와 다릅니다.'],
+['co','바이어가 한·미 FTA 관세 혜택을 받으려 한다며, 물품이 한국산임을 증명하는 서류를 보내 달라고 합니다.','원산지를 증명하는 서류가 C/O입니다. FTA 특혜 관세를 받으려면 협정이 정한 형식의 원산지 증빙이 필요합니다.'],
+['disc','은행이 "B/L의 물품명이 신용장과 다르다"며 지급을 보류하겠다고 연락했습니다.','서류가 신용장 조건과 맞지 않는 것을 Discrepancy(하자)라고 합니다. 바이어가 하자를 받아들이지 않으면 지급이 거절될 수 있습니다.'],
+['adv','미국 은행이 개설한 신용장이 서울의 한 은행을 거쳐 우리 회사에 도착했다고 알려 왔습니다.','수출자에게 신용장 도착을 알려 주는 수출국 은행이 Advising Bank입니다.'],
+['mark','같은 배에 실리는 수많은 화물 중 우리 박스를 구별하려고, 박스 겉면에 바이어 이니셜과 박스 번호를 찍었습니다.','포장 겉면의 식별 표시가 Shipping Mark(화인)입니다. 서류에도 같은 화인을 적어 화물과 서류를 연결합니다.'],
+['hs','처음 수출하는 품목이라 미국의 관세율과 규제를 확인하려고 합니다. 가장 먼저 무엇을 확인해야 할까요?','관세율과 규제는 HS Code를 기준으로 정해집니다. 품목 분류를 잘못하면 관세를 더 내거나 통관이 늦어질 수 있습니다.'],
+['arb','계약서에 "분쟁이 생기면 법원 소송 대신 대한상사중재원의 판정에 따른다"는 조항을 넣었습니다.','법원 대신 중재인의 판정으로 분쟁을 끝내는 방식이 Arbitration(중재)입니다. 뉴욕협약 가입국에서는 외국 중재판정도 집행할 수 있습니다.'],
+['teu','선사가 "이번 달 부산–LA 노선에 5,000 단위 선복이 남아 있다"고 합니다. 40피트 컨테이너 하나는 이 단위로 2입니다.','20피트 컨테이너를 1로 세는 단위가 TEU입니다. 40피트 컨테이너는 2 TEU입니다.'],
+['collect','FOB 계약이라 바이어가 운임을 내기로 했습니다. B/L에는 운임을 도착지에서 받는다고 표시됩니다.','목적지에서 수하인이 운임을 내는 경우 Freight Collect로 표시합니다. CIF 같은 C조건이면 Freight Prepaid가 맞습니다.'],
+['claim','도착한 화물의 20%가 파손되어 바이어가 손해 배상을 요구하는 공식 서한을 보냈습니다.','손해 배상을 청구하는 것이 Claim입니다. 원인이 운송 중 사고라면 보험사나 운송인에게 청구할 수도 있습니다.']
+];
+const MAIL=[
+{from:'Sarah Lee (Sunrise Beauty, 바이어)',subj:'L/C opened',body:'Dear Mr. Kim,\n\nWe have received your [[pi|Proforma Invoice]] and opened an irrevocable [[lc|L/C]] through First Pacific Bank today. The [[adv|Advising Bank]] in Seoul will contact you soon.\n\nPlease ship by December 10 and let us know the [[etd|ETD]] and [[eta|ETA]] as soon as possible.\n\nBest regards,\nSarah',
+gist:'견적송장을 받고 오늘 First Pacific Bank를 통해 취소불능 신용장을 개설했습니다. 서울의 통지은행이 곧 연락할 것입니다. 12월 10일까지 선적하고, 출항 예정일과 도착 예정일을 최대한 빨리 알려 주세요.'},
+{from:'Busan Global Logistics (포워더)',subj:'Booking confirmation',body:'Hi Mr. Kim,\n\nYour cargo will move as [[lcl|LCL]], so please deliver it to our [[cfs|CFS]] in Busan by Thursday. The vessel leaves on December 8.\n\n[[thc|THC]] will be charged separately. Since the terms are CIF, the B/L will be marked [[prepaid|Freight Prepaid]].\n\nPlease check the [[mark|Shipping Mark]] on every carton.\n\nThanks,\nJun',
+gist:'화물은 소량 혼재로 가므로 목요일까지 부산 CFS로 반입해 주세요. 배는 12월 8일에 떠납니다. 터미널 화물 처리비는 따로 청구됩니다. CIF 조건이라 B/L에는 운임 선불로 표시됩니다. 모든 박스의 화인을 확인해 주세요.'},
+{from:'Korea Trade Bank (매입 은행)',subj:'Documents under L/C FPB-LC-260417',body:'Dear Sir,\n\nWe regret to inform you that the documents presented under the above credit contain the following [[disc|Discrepancy]]: the B/L is not a [[clean|Clean B/L]].\n\nWe are holding the documents until the [[app|Applicant]] accepts the discrepancy. [[nego|Negotiation]] cannot proceed at this time.\n\nYours faithfully,\nTrade Finance Team',
+gist:'제출하신 서류에 하자가 있습니다. B/L이 무고장 선하증권이 아닙니다. 개설의뢰인(바이어)이 하자를 받아들일 때까지 서류를 보관하며, 지금은 매입을 진행할 수 없습니다.'},
+{from:'Sarah Lee (Sunrise Beauty, 바이어)',subj:'URGENT: cargo arrived',body:'Mr. Kim,\n\nThe vessel arrived in Los Angeles yesterday, but the original [[bl|B/L]] has not reached us yet. Could you arrange a [[sur|Surrender B/L]]?\n\nOtherwise we will have to get an [[lg|L/G]] from our bank. We are already paying [[dem|Demurrage]] at the terminal.\n\nSarah',
+gist:'배가 어제 LA에 도착했는데 원본 B/L이 아직 오지 않았습니다. 서렌더 처리를 해 주실 수 있나요? 안 되면 저희 은행에서 수입화물선취보증서를 받아야 합니다. 이미 터미널에서 체화료를 내고 있습니다.'}
+];
+const FORM=[
+{title:'선하증권 (Bill of Lading) 작성',sit:'한빛코스메틱(서울)이 미국 Sunrise Beauty에 화장품을 수출합니다. CIF Los Angeles 조건이고, 신용장은 First Pacific Bank가 개설했으며 B/L을 "개설은행 지시식"으로 요구합니다. 부산항에서 선적합니다.',
+pool:['Hanbit Cosmetics Co., Ltd.','Sunrise Beauty Inc.','To order of First Pacific Bank','Busan, Korea','Los Angeles, USA','FREIGHT PREPAID','FREIGHT COLLECT'],
+f:[['송하인 (Shipper)','Hanbit Cosmetics Co., Ltd.','화물을 보내는 수출자가 송하인입니다.'],['수하인 (Consignee)','To order of First Pacific Bank','신용장이 개설은행 지시식을 요구했으므로 바이어 이름이 아니라 "To order of First Pacific Bank"라고 씁니다. 은행이 대금을 받을 때까지 화물에 대한 권리를 쥐는 장치입니다.'],['착화 통지처 (Notify Party)','Sunrise Beauty Inc.','화물이 도착하면 연락받을 실제 수입자를 적습니다.'],['선적항 (Port of Loading)','Busan, Korea','화물을 싣는 항구는 부산입니다. LA는 양륙항(Port of Discharge)입니다.'],['운임 (Freight)','FREIGHT PREPAID','CIF는 매도인이 운임을 내는 조건이라 운임 선불로 표시합니다.']]},
+{title:'신용장 당사자 연결',sit:'Sunrise Beauty(미국 LA, 수입자)가 First Pacific Bank(LA)에 신용장 개설을 신청했습니다. 신용장은 Korea Trade Bank(서울)를 통해 한빛코스메틱(서울, 수출자)에 전달되었습니다.',
+pool:['Sunrise Beauty Inc.','Hanbit Cosmetics Co., Ltd.','First Pacific Bank, Los Angeles','Korea Trade Bank, Seoul'],
+f:[['개설의뢰인 (Applicant)','Sunrise Beauty Inc.','은행에 신용장 개설을 신청한 수입자입니다.'],['수익자 (Beneficiary)','Hanbit Cosmetics Co., Ltd.','신용장 대금을 받는 수출자입니다.'],['개설은행 (Issuing Bank)','First Pacific Bank, Los Angeles','수입자의 신청으로 신용장을 열고 지급을 확약한 수입국 은행입니다.'],['통지은행 (Advising Bank)','Korea Trade Bank, Seoul','수출자에게 신용장 도착을 알려 준 수출국 은행입니다.']]},
+{title:'거래 조건 정리표',sit:'이번 주문은 박스 30개(컨테이너를 채우지 못함)이고, 바이어가 대금을 지급해야 서류를 받는 추심 방식으로 결제합니다. 바이어는 FTA 관세 혜택을 받으려 합니다.',
+pool:['FCL','LCL','D/P','D/A','C/O','L/G','CY','CFS'],
+f:[['운송 형태','LCL','컨테이너를 채우지 못하는 소량 화물이므로 LCL입니다.'],['화물 반입 장소','CFS','LCL 화물은 CFS로 반입해 다른 화물과 함께 컨테이너에 넣습니다. CY는 주로 FCL 컨테이너가 오가는 곳입니다.'],['결제 방식','D/P','대금 지급과 서류 인도를 맞바꾸는 추심 방식은 D/P입니다.'],['FTA 혜택에 필요한 서류','C/O','원산지증명서(C/O)로 원산지를 증명해야 FTA 특혜 관세를 받을 수 있습니다.']]}
+];
+const app=document.querySelector('#app');
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const nm=t=>t.a+(t.e?' ('+t.e+')':'');
+let G={ok:0,n:0},M={};
+let rec={};try{rec=JSON.parse(localStorage.getItem('tradeTermRec'))||{}}catch(e){}
+const save=()=>{try{localStorage.setItem('tradeTermRec',JSON.stringify(rec))}catch(e){}};
+function tally(ok){G.n++;if(ok)G.ok++;document.querySelector('#okc').textContent=G.ok;document.querySelector('#rate').textContent=Math.round(G.ok/G.n*100)+'%'}
+function distract(id,k){const t=TM[id],same=shuf(T.filter(x=>x.id!==id&&x.c===t.c)),other=shuf(T.filter(x=>x.id!==id&&x.c!==t.c));return shuf([t,...[...same,...other].slice(0,k)])}
+function home(){
+const r=k=>rec[k]!=null?`최고 기록 ${rec[k]}`:'아직 기록 없음';
+app.innerHTML=`<section class="band hero"><div class="in"><h1>용어는 상황 속에서 외워야 남습니다</h1>
+<p class="lead">무역 용어 ${T.length}개를 플래시카드로 익히고, 실제 업무 상황과 이메일, 서류 양식에서 직접 써 보세요. 상황형 연습 세 가지가 핵심이고, 플래시카드와 용어집은 기초 다지기용입니다.</p></div></section>
+<section class="band"><div class="modes">
+<button class="mode main" data-a="sit"><span class="tag">상황형 · 10문제</span><h3>이럴 땐 무슨 용어?</h3><p>업무 상황을 읽고 알맞은 용어를 고릅니다.</p><span class="rec">${r('sit')}</span></button>
+<button class="mode main" data-a="mail"><span class="tag">상황형 · 이메일 ${MAIL.length}통</span><h3>이메일 해독</h3><p>바이어, 포워더, 은행의 영문 이메일 속 용어의 뜻을 맞힙니다.</p><span class="rec">${r('mail')}</span></button>
+<button class="mode main" data-a="form"><span class="tag">상황형 · 양식 ${FORM.length}장</span><h3>서류 빈칸 채우기</h3><p>거래 상황을 보고 B/L과 신용장 양식의 칸을 채웁니다.</p><span class="rec">${r('form')}</span></button>
+<button class="mode" data-a="flash"><span class="tag">기초 · ${T.length}장</span><h3>플래시카드</h3><p>모르는 카드는 다시 나옵니다. 분야별로 골라 익히세요.</p><span class="rec">${r('flash')}</span></button>
+<button class="mode" data-a="gloss"><span class="tag">참고</span><h3>용어집</h3><p>약어, 영문, 한글 어느 쪽으로든 검색합니다.</p><span class="rec">${T.length}개 수록</span></button>
+</div></section>`;window.scrollTo(0,0)}
+function done(key,score,max,again){const best=rec[key];const s=`${score}/${max}`;if(best==null||score>+best.split('/')[0]){rec[key]=s;save()}
+app.innerHTML=`<section class="band"><div class="card"><p class="kicker">연습 완료</p><div class="score">${s}</div><p>${score===max?'모두 맞혔습니다.':score>=max*.7?'잘했습니다. 틀린 용어만 용어집에서 다시 확인해 보세요.':'용어집과 플래시카드로 복습한 뒤 다시 도전해 보세요.'}</p>
+<div class="row"><button class="btn" data-a="${again}">다시 하기</button><button class="btn ghost" data-a="home">처음 화면</button></div></div></section>`;window.scrollTo(0,0)}
+/* 플래시카드 */
+function flashSetup(cat){M={m:'flash',cat:cat||'전체'};const pool=T.filter(t=>M.cat==='전체'||t.c===M.cat);M.q=shuf(pool.map(t=>t.id));M.total=M.q.length;M.known=0;M.first=new Set();M.flip=false;flash()}
+function flash(){if(!M.q.length){return done('flash',M.first.size,M.total,'flash')}
+const t=TM[M.q[0]],pct=Math.round(M.known/M.total*100);
+app.innerHTML=`<section class="band"><div class="card"><p class="kicker">플래시카드 · 남은 카드 <b>${M.q.length}</b> · 익힘 ${M.known}/${M.total}</p>
+<div class="chips">${['전체',...CATS].map(c=>`<button class="chip ${c===M.cat?'on':''}" data-a="fcat" data-c="${c}">${c}</button>`).join('')}</div>
+<button class="flash" data-a="flip" aria-live="polite">${M.flip?`<span class="ko">${t.k}</span><span>${t.d}</span><span class="sub">${nm(t)}</span>`:`<span class="big">${t.a}</span>${t.e?`<span class="sub">${t.e}</span>`:''}<span class="hint">눌러서 뒤집기 · 분야: ${t.c}</span>`}</button>
+<div class="meter"><i style="width:${pct}%"></i></div>
+<div class="row"><button class="btn alt" data-a="know" ${M.flip?'':'disabled'}>알아요</button><button class="btn ghost" data-a="again" ${M.flip?'':'disabled'}>다시 볼래요</button></div>
+<p class="note">처음 볼 때 "알아요"를 누른 카드 수가 기록됩니다.</p></div></section>`}
+/* 상황형 */
+function sitSetup(){M={m:'sit',q:shuf(SIT).slice(0,10),i:0,s:0};sit()}
+function sit(){if(M.i>=M.q.length)return done('sit',M.s,M.q.length,'sit');const [id,txt]=M.q[M.i];M.opts=distract(id,3);M.ans=false;
+app.innerHTML=`<section class="band"><div class="card"><p class="kicker">이럴 땐 무슨 용어? · <b>${M.i+1} / ${M.q.length}</b></p>
+<div class="sit">${txt}</div><h2>이 상황에 맞는 용어는?</h2>
+<div class="opts">${M.opts.map((t,i)=>`<button class="opt" data-a="spick" data-i="${i}"><span class="m">${t.a}</span> · ${t.k}</button>`).join('')}</div><div id="fb"></div></div></section>`;window.scrollTo(0,0)}
+function spick(i){if(M.ans)return;M.ans=true;const [id,,why]=M.q[M.i],ok=M.opts[i].id===id;if(ok)M.s++;tally(ok);
+document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(M.opts[j].id===id)b.classList.add('right');else if(j===i)b.classList.add('wrong')});
+const t=TM[id];document.querySelector('#fb').innerHTML=`<div class="fb ${ok?'good':'bad'}"><p><b>${ok?'정답입니다.':'정답은 '+t.a+' ('+t.k+')입니다.'}</b></p><p>${why}</p></div><div class="row"><button class="btn alt" data-a="snext">${M.i===M.q.length-1?'결과 보기':'다음 문제'}</button></div>`}
+/* 이메일 */
+function mailSetup(){M={m:'mail',i:0,s:0,tot:0};mail()}
+function mail(){if(M.i>=MAIL.length)return done('mail',M.s,M.tot,'mail');const ml=MAIL[M.i];M.res={};M.cur=null;M.ids=[...ml.body.matchAll(/\[\[(\w+)\|/g)].map(x=>x[1]);
+const body=ml.body.replace(/\[\[(\w+)\|([^\]]+)\]\]/g,(_,id,w)=>`<button class="term" data-a="mterm" data-id="${id}">${w}</button>`);
+app.innerHTML=`<section class="band"><div class="card"><p class="kicker">이메일 해독 · <b>${M.i+1} / ${MAIL.length}</b> · 밑줄 친 용어 ${M.ids.length}개</p>
+<h2 style="margin-bottom:0">밑줄 친 용어를 하나씩 눌러 뜻을 고르세요</h2>
+<div class="mail"><div class="hd">보낸 사람 <b>${ml.from}</b><br>제목 <b>${ml.subj}</b></div><div class="bd">${body}</div></div>
+<div id="mq"><p class="note">용어를 누르면 이곳에 보기가 나옵니다.</p></div></div></section>`;window.scrollTo(0,0)}
+function mterm(id){if(M.res[id]!=null)return;M.cur=id;document.querySelectorAll('.term').forEach(b=>b.classList.toggle('sel',b.dataset.id===id));M.opts=distract(id,3);
+const q=document.querySelector('#mq');q.innerHTML=`<h3>"${TM[id].a}"의 뜻은?</h3><div class="opts">${M.opts.map((t,i)=>`<button class="opt" data-a="mpick" data-i="${i}">${t.k}</button>`).join('')}</div>`;q.scrollIntoView({block:'nearest'})}
+function mpick(i){const id=M.cur;if(!id||M.res[id]!=null)return;const ok=M.opts[i].id===id;M.res[id]=ok;M.tot++;if(ok)M.s++;tally(ok);
+document.querySelectorAll('.term').forEach(b=>{if(b.dataset.id===id){b.classList.remove('sel');b.classList.add(ok?'r':'w')}});
+document.querySelectorAll('#mq .opt').forEach((b,j)=>{b.disabled=true;if(M.opts[j].id===id)b.classList.add('right');else if(j===i)b.classList.add('wrong')});
+const t=TM[id],left=M.ids.filter(x=>M.res[x]==null).length;
+document.querySelector('#mq').insertAdjacentHTML('beforeend',`<div class="fb ${ok?'good':'bad'}"><p><b>${nm(t)} = ${t.k}</b></p><p>${t.d}</p></div>`+(left?`<p class="note">남은 용어 ${left}개</p>`:`<div class="gist"><b>이메일 요지</b><p style="margin:6px 0 0">${MAIL[M.i].gist}</p></div><div class="row"><button class="btn alt" data-a="mnext">${M.i===MAIL.length-1?'결과 보기':'다음 이메일'}</button></div>`));M.cur=null}
+/* 서류 양식 */
+function formSetup(){M={m:'form',i:0,s:0,tot:0};form()}
+function form(){if(M.i>=FORM.length)return done('form',M.s,M.tot,'form');const fm=FORM[M.i];M.chk=false;
+app.innerHTML=`<section class="band"><div class="card"><p class="kicker">서류 빈칸 채우기 · <b>${M.i+1} / ${FORM.length}</b></p><h2>${fm.title}</h2>
+<div class="sit">${fm.sit}</div>
+<div class="form"><div class="fh">${fm.title.split(' 작성')[0]}</div>${fm.f.map(([l],i)=>`<div class="fld" id="fl${i}"><label for="s${i}">${l}</label><select id="s${i}"><option value="">선택하세요</option>${fm.pool.map(p=>`<option>${p}</option>`).join('')}</select></div>`).join('')}</div>
+<div class="row" id="frow"><button class="btn" data-a="fcheck">채점하기</button></div></div></section>`;window.scrollTo(0,0)}
+function fcheck(){if(M.chk)return;const fm=FORM[M.i],vals=fm.f.map((_,i)=>document.querySelector('#s'+i).value);
+if(vals.some(v=>!v)){document.querySelector('#frow').insertAdjacentHTML('beforeend','<span class="note" id="warn" style="margin:0">모든 칸을 채워 주세요.</span>');setTimeout(()=>{const w=document.querySelector('#warn');if(w)w.remove()},2200);return}
+M.chk=true;let s=0;fm.f.forEach(([,ans,why],i)=>{const ok=vals[i]===ans,el=document.querySelector('#fl'+i);if(ok)s++;tally(ok);el.classList.add(ok?'r':'w');el.querySelector('select').disabled=true;
+el.insertAdjacentHTML('beforeend',`<p class="why">${ok?'✓ ':'✗ 정답: <b>'+ans+'</b> · '}${why}</p>`)});M.s+=s;M.tot+=fm.f.length;
+document.querySelector('#frow').innerHTML=`<span><b>${s} / ${fm.f.length}</b> 칸 정답</span><button class="btn alt" data-a="fnext">${M.i===FORM.length-1?'결과 보기':'다음 양식'}</button>`}
+/* 용어집 */
+function gloss(){app.innerHTML=`<section class="band"><div class="card"><p class="kicker">용어집 · ${T.length}개</p><h2>찾는 용어를 입력하세요</h2>
+<input class="search" id="q" type="search" placeholder="예: B/L, 신용장, demurrage" autocomplete="off" aria-label="용어 검색">
+<div class="chips" id="gc">${['전체',...CATS].map(c=>`<button class="chip ${c==='전체'?'on':''}" data-a="gcat" data-c="${c}">${c}</button>`).join('')}</div><ul class="gl" id="gl"></ul></div></section>`;M={m:'gloss',cat:'전체'};glist();
+document.querySelector('#q').addEventListener('input',glist);window.scrollTo(0,0)}
+function glist(){const q=(document.querySelector('#q').value||'').trim().toLowerCase();const list=T.filter(t=>(M.cat==='전체'||t.c===M.cat)&&(!q||[t.a,t.e,t.k,t.d].join(' ').toLowerCase().includes(q)));
+document.querySelector('#gl').innerHTML=list.length?list.map(t=>`<li><span class="c">${t.c}</span><span class="m">${t.a}</span> <span class="e">${t.e}</span><br><b>${t.k}</b> · ${t.d}</li>`).join(''):'<li>찾는 용어가 없습니다. 다른 표기(약어, 영문, 한글)로 검색해 보세요.</li>'}
+app.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
+({home,sit:sitSetup,mail:mailSetup,form:formSetup,flash:()=>flashSetup(),gloss,
+fcat:()=>flashSetup(b.dataset.c),flip:()=>{M.flip=!M.flip;flash()},
+know:()=>{const id=M.q.shift();if(!M.seen||!M.seen.has(id))M.first.add(id);M.known++;M.flip=false;flash()},
+again:()=>{const id=M.q.shift();(M.seen=M.seen||new Set()).add(id);M.q.splice(Math.min(3,M.q.length),0,id);M.flip=false;flash()},
+spick:()=>spick(+b.dataset.i),snext:()=>{M.i++;sit()},
+mterm:()=>mterm(b.dataset.id),mpick:()=>mpick(+b.dataset.i),mnext:()=>{M.i++;mail()},
+fcheck,fnext:()=>{M.i++;form()},
+gcat:()=>{M.cat=b.dataset.c;document.querySelectorAll('#gc .chip').forEach(c=>c.classList.toggle('on',c.dataset.c===M.cat));glist()}})[a]?.()});
+document.querySelector('.brand').addEventListener('click',home);
+home();
+}
+</script>
+</body>
+</html>
